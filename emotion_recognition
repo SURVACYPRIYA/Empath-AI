@@ -1,0 +1,54 @@
+import cv2
+from fer import FER  # Assuming FER is being used for emotion detection
+
+# Initialize FER model
+emotion_detector = FER()
+
+# Start webcam feed
+cap = cv2.VideoCapture(0)
+
+# Inform the user about privacy and disclaimers
+print("This system detects your emotions in real-time and does not store any data.")
+print("Disclaimer: Emotion detection is not 100% accurate and should not be used for critical decisions.")
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("Failed to capture video frame.")
+        break
+
+    try:
+        # Perform emotion detection on the frame
+        result = emotion_detector.top_emotion(frame)
+        
+        if result:  # Check if result is not None
+            emotion, score = result
+        else:
+            emotion, score = "Unknown", None
+
+        # Debugging: Print emotion and score
+        print(f"Emotion: {emotion}, Score: {score}")
+
+        # Handle None values for score and emotion
+        emotion = emotion if emotion else "Unknown"
+        score = score if score is not None else 0.0
+
+        # Display emotion and score on the frame
+        cv2.putText(frame, f"Emotion Detected: {emotion} ({score:.2f})", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 2)
+        cv2.putText(frame, "AI-based Emotion Detection: FER Model", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+        cv2.putText(frame, "Data is processed locally. No data is stored.", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36, 255, 12), 1)
+    except Exception as e:
+        # Handle unexpected errors
+        print(f"Error during emotion detection: {e}")
+        cv2.putText(frame, "Error detecting emotion", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+
+    # Show the video feed with the emotion label
+    cv2.imshow('Emotion Detection with Responsible AI', frame)
+
+    # Press 'q' to quit the video feed
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# Release the webcam and close windows
+cap.release()
+cv2.destroyAllWindows()

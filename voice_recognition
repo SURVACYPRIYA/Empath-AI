@@ -1,0 +1,14 @@
+import librosa
+import numpy as np
+
+
+audio_path = r"C:\Users\Priya\Downloads\1001_ITH_ANG_XX.wav"
+y, sr = librosa.load(audio_path)
+
+# Extract features
+mfcc = librosa.feature.mfcc(y=y, sr=sr)
+print("MFCC Features:", mfcc)
+
+# Calculate tempo
+tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
+print("Tempo:", tempo)
